@@ -4,25 +4,33 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/riyapathania08/flask-jenkins-app.git'
+                echo 'Cloning repository...'
+                checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build("flask-jenkins-app")
-                }
+                echo 'Building Docker image...'
+                bat 'docker build -t flask-jenkins-app:latest .'
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                script {
-                    sh 'docker run -d -p 5000:5000 flask-jenkins-app'
-                }
+                echo 'Running Docker container...'
+                bat 'docker rm -f flask-jenkins-container || exit 0'
+                bat 'docker run -d -p 5000:5000 --name flask-jenkins-container flask-jenkins-app:latest'
             }
         }
     }
-}
 
+    post {
+        success {
+            echo '✅ Build and Deployment successful!'
+        }
+        failure {
+            echo '❌ Build or Deployment failed!'
+        }
+    }
+}
