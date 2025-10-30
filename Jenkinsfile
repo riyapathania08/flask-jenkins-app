@@ -10,19 +10,14 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build("flask-jenkins-app")
-                }
+                bat 'docker build -t flask-jenkins-app .'
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                script {
-                    sh 'docker run -d -p 5000:5000 flask-jenkins-app'
-                }
+                bat 'docker run -d -p 5000:5000 flask-jenkins-app'
             }
         }
     }
 }
-
